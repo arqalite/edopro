@@ -617,7 +617,7 @@ void DuelClient::HandleSTOCPacketLanAsync(const std::vector<uint8_t>& data) {
 		mainGame->showcardcode = (pkt.res1 - 1) + ((pkt.res2 - 1) << 16);
 		mainGame->showcarddif = 50;
 		mainGame->showcardp = 0;
-		mainGame->showcard = 100;
+		//mainGame->showcard = 100;
 		mainGame->WaitFrameSignal(60, lock);
 		break;
 	}
@@ -1418,7 +1418,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			std::unique_lock<epro::mutex> lock(mainGame->gMutex);
 			mainGame->AddLog(text);
 			mainGame->stACMessage->setText(text.data());
-			mainGame->PopupElement(mainGame->wACMessage, 20);
+			// mainGame->PopupElement(mainGame->wACMessage, 20);
 			mainGame->WaitFrameSignal(40, lock);
 			break;
 		}
@@ -1426,7 +1426,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			std::unique_lock<epro::mutex> lock(mainGame->gMutex);
 			mainGame->showcardcode = data;
 			mainGame->showcarddif = 0;
-			mainGame->showcard = 1;
+			//mainGame->showcard = 1;
 			mainGame->WaitFrameSignal(30, lock);
 			break;
 		}
@@ -1470,7 +1470,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			std::unique_lock<epro::mutex> lock(mainGame->gMutex);
 			mainGame->showcardcode = data;
 			mainGame->showcarddif = 0;
-			mainGame->showcard = 1;
+			//mainGame->showcard = 1;
 			Play(SoundManager::SFX::ACTIVATE);
 			mainGame->WaitFrameSignal(30, lock);
 			break;
@@ -1622,10 +1622,10 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			} else
 				mainGame->dInfo.vic_string = gDataManager->GetVictoryString(type).data();
 		}
-		mainGame->showcard = 101;
+		//mainGame->showcard = 101;
 		mainGame->WaitFrameSignal(120, lock);
 		mainGame->dInfo.vic_string = L"";
-		mainGame->showcard = 0;
+		//mainGame->showcard = 0;
 		break;
 	}
 	case MSG_WAITING: {
@@ -1645,9 +1645,9 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			mainGame->showcardcode = 11;
 			mainGame->showcarddif = 30;
 			mainGame->showcardp = 0;
-			mainGame->showcard = 101;
+			//mainGame->showcard = 101;
 			mainGame->WaitFrameSignal(40, lock);
-			mainGame->showcard = 0;
+			//mainGame->showcard = 0;
 		}
 		mainGame->dInfo.isStarted = true;
 		mainGame->dInfo.isFirst = (playertype & 0xf) ? false : true;
@@ -2685,45 +2685,46 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 		return true;
 	}
 	case MSG_SHUFFLE_DECK: {
-		Play(SoundManager::SFX::SHUFFLE);
-		const auto player = mainGame->LocalPlayer(BufferIO::Read<uint8_t>(pbuf));
-		if(mainGame->dField.deck[player].size() < 2)
-			return true;
-		bool rev = mainGame->dField.deck_reversed;
+		// Play(SoundManager::SFX::SHUFFLE);
+		// const auto player = mainGame->LocalPlayer(BufferIO::Read<uint8_t>(pbuf));
+		// if(mainGame->dField.deck[player].size() < 2)
+		// 	return true;
+		// bool rev = mainGame->dField.deck_reversed;
 		auto lock = LockIf();
-		if(!mainGame->dInfo.isCatchingUp) {
-			mainGame->dField.deck_reversed = false;
-			if(rev) {
-				for(const auto& pcard : mainGame->dField.deck[player])
-					mainGame->dField.MoveCard(pcard, 10);
-				mainGame->WaitFrameSignal(10, lock);
-			}
-		}
-		for(const auto& pcard : mainGame->dField.deck[player]) {
-			pcard->code = 0;
-			pcard->is_reversed = false;
-		}
-		if(!mainGame->dInfo.isCatchingUp) {
-			for(int i = 0; i < 5; ++i) {
-				for(const auto& pcard : mainGame->dField.deck[player]) {
-					constexpr float milliseconds = 3.0f * 1000.0f / 60.0f;
-					pcard->dPos.set((rand() * 1.2f / RAND_MAX - 0.2f) / milliseconds, 0, 0);
-					pcard->dRot.set(0, 0, 0);
-					pcard->is_moving = true;
-					pcard->aniFrame = milliseconds;
-				}
-				mainGame->WaitFrameSignal(3, lock);
-				for(const auto& pcard : mainGame->dField.deck[player])
-					mainGame->dField.MoveCard(pcard, 3);
-				mainGame->WaitFrameSignal(3, lock);
-			}
-			mainGame->dField.deck_reversed = rev;
-			if(rev) {
-				for(const auto& pcard : mainGame->dField.deck[player])
-					mainGame->dField.MoveCard(pcard, 10);
-				mainGame->WaitFrameSignal(10, lock);
-			}
-		}
+		// if(!mainGame->dInfo.isCatchingUp) {
+		// 	mainGame->dField.deck_reversed = false;
+		// 	if(rev) {
+		// 		for(const auto& pcard : mainGame->dField.deck[player])
+		// 			mainGame->dField.MoveCard(pcard, 10);
+		// 		mainGame->WaitFrameSignal(10, lock);
+		// 	}
+		// }
+		// for(const auto& pcard : mainGame->dField.deck[player]) {
+		// 	pcard->code = 0;
+		// 	pcard->is_reversed = false;
+		// }
+		// if(!mainGame->dInfo.isCatchingUp) {
+		// 	for(int i = 0; i < 5; ++i) {
+		// 		for(const auto& pcard : mainGame->dField.deck[player]) {
+		// 			constexpr float milliseconds = 3.0f * 1000.0f / 60.0f;
+		// 			pcard->dPos.set((rand() * 1.2f / RAND_MAX - 0.2f) / milliseconds, 0, 0);
+		// 			pcard->dRot.set(0, 0, 0);
+		// 			pcard->is_moving = true;
+		// 			pcard->aniFrame = milliseconds;
+		// 		}
+		// 		mainGame->WaitFrameSignal(3, lock);
+		// 		for(const auto& pcard : mainGame->dField.deck[player])
+		// 			mainGame->dField.MoveCard(pcard, 3);
+		// 		mainGame->WaitFrameSignal(3, lock);
+		// 	}
+		// 	mainGame->dField.deck_reversed = rev;
+		// 	if(rev) {
+		// 		for(const auto& pcard : mainGame->dField.deck[player])
+		// 			mainGame->dField.MoveCard(pcard, 10);
+		// 		mainGame->WaitFrameSignal(10, lock);
+		// 	}
+		// }
+		mainGame->WaitFrameSignal(30, lock);
 		return true;
 	}
 	case MSG_SHUFFLE_HAND: {
@@ -2947,9 +2948,9 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			mainGame->showcardcode = 10;
 			mainGame->showcarddif = 30;
 			mainGame->showcardp = 0;
-			mainGame->showcard = 101;
+			//mainGame->showcard = 101;
 			mainGame->WaitFrameSignal(40, lock);
-			mainGame->showcard = 0;
+			//mainGame->showcard = 0;
 		}
 		return true;
 	}
@@ -3031,9 +3032,9 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			break;
 		}
 		if(!mainGame->dInfo.isCatchingUp) {
-			mainGame->showcard = 101;
+			//mainGame->showcard = 101;
 			mainGame->WaitFrameSignal(40, lock);
-			mainGame->showcard = 0;
+			//mainGame->showcard = 0;
 		}
 		return true;
 	}
@@ -3284,9 +3285,9 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			mainGame->showcardcode = code;
 			mainGame->showcarddif = 0;
 			mainGame->showcardp = 0;
-			mainGame->showcard = 7;
+			//mainGame->showcard = 7;
 			mainGame->WaitFrameSignal(30, lock);
-			mainGame->showcard = 0;
+			//mainGame->showcard = 0;
 			mainGame->WaitFrameSignal(11, lock);
 		}
 		return true;
@@ -3305,9 +3306,9 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			event_string = epro::sprintf(gDataManager->GetSysString(1605), gDataManager->GetName(code));
 			mainGame->showcardcode = code;
 			mainGame->showcarddif = 1;
-			mainGame->showcard = 5;
+			//mainGame->showcard = 5;
 			mainGame->WaitFrameSignal(30, lock);
-			mainGame->showcard = 0;
+			//mainGame->showcard = 0;
 			mainGame->WaitFrameSignal(11, lock);
 		}
 		return true;
@@ -3333,9 +3334,9 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			mainGame->showcardcode = code;
 			mainGame->showcarddif = 0;
 			mainGame->showcardp = 0;
-			mainGame->showcard = 7;
+			//mainGame->showcard = 7;
 			mainGame->WaitFrameSignal(30, lock);
-			mainGame->showcard = 0;
+			//mainGame->showcard = 0;
 			mainGame->WaitFrameSignal(11, lock);
 		}
 		return true;
@@ -3365,7 +3366,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 		if(!mainGame->dInfo.isCatchingUp) {
 			mainGame->showcardcode = code;
 			mainGame->showcarddif = 0;
-			mainGame->showcard = 1;
+			//mainGame->showcard = 1;
 			pcard->is_highlighting = true;
 			if(pcard->location & 0x30) {
 				constexpr float milliseconds = 5.0f * 1000.0f / 60.0f;
@@ -3455,9 +3456,9 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			std::unique_lock<epro::mutex> lock(mainGame->gMutex);
 			mainGame->showcardcode = mainGame->dField.chains[ct - 1].code;
 			mainGame->showcarddif = 0;
-			mainGame->showcard = 3;
+			//mainGame->showcard = 3;
 			mainGame->WaitFrameSignal(30, lock);
-			mainGame->showcard = 0;
+			//mainGame->showcard = 0;
 		}
 		return true;
 	}
@@ -3896,7 +3897,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			mainGame->showcardcode = res2 + (res1 << 16);
 		mainGame->showcarddif = 50;
 		mainGame->showcardp = 0;
-		mainGame->showcard = 100;
+		//mainGame->showcard = 100;
 		mainGame->WaitFrameSignal(60, lock);
 		return false;
 	}
@@ -3982,10 +3983,10 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 				mainGame->showcardcode = pcard->code;
 				mainGame->showcarddif = 0;
 				mainGame->showcardp = (value & 0xffff) - 1;
-				mainGame->showcard = 6;
+				//mainGame->showcard = 6;
 				mainGame->WaitFrameSignal(30, lock);
 				pcard->is_highlighting = false;
-				mainGame->showcard = 0;
+				//mainGame->showcard = 0;
 			}
 		}
 		return true;
