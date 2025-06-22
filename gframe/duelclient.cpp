@@ -1946,7 +1946,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 		if (pcard->code != code)
 			pcard->SetCode(code);
 		if(info.location != LOCATION_DECK) {
-			pcard->is_highlighting = true;
+			pcard->is_highlighting = false;
 			mainGame->dField.highlighting_card = pcard;
 		}
 		mainGame->stQMessage->setText(text.data());
@@ -2636,7 +2636,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 						pcard->is_public = true;
 					}
 					mainGame->dField.MoveCard(pcard, 5);
-					pcard->is_highlighting = true;
+					pcard->is_highlighting = false;
 				} else if (location == LOCATION_MZONE) {
 					if (pcard->position & POS_FACEUP)
 						continue;
@@ -3367,7 +3367,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			mainGame->showcardcode = code;
 			mainGame->showcarddif = 0;
 			//mainGame->showcard = 1;
-			pcard->is_highlighting = true;
+			pcard->is_highlighting = false;
 			if(pcard->location & 0x30) {
 				constexpr float milliseconds = 5.0f * 1000.0f / 60.0f;
 				float shift = -0.75f / milliseconds;
@@ -3478,7 +3478,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 				pcard = mainGame->dField.GetCard(info.controler, info.location & (~LOCATION_OVERLAY) & 0xff, info.sequence)->overlayed[info.position];
 			else
 				pcard = mainGame->dField.GetCard(info.controler, info.location, info.sequence);
-			pcard->is_highlighting = true;
+			pcard->is_highlighting = false;
 		}
 		mainGame->WaitFrameSignal(30, lock);
 		for(auto& pcard : pcards)
@@ -3494,7 +3494,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			CoreUtils::loc_info info = CoreUtils::ReadLocInfo(pbuf, mainGame->dInfo.compat_mode);
 			ClientCard* pcard = mainGame->dField.GetCard(mainGame->LocalPlayer(info.controler), info.location, info.sequence);
 			std::unique_lock<epro::mutex> lock(mainGame->gMutex);
-			pcard->is_highlighting = true;
+			pcard->is_highlighting = false;
 			if(mainGame->dInfo.curMsg == MSG_BECOME_TARGET)
 				mainGame->dField.current_chain.target.insert(pcard);
 			if(pcard->location & LOCATION_ONFIELD) {
@@ -3717,7 +3717,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 		if(mainGame->dInfo.isCatchingUp)
 			return true;
 		std::unique_lock<epro::mutex> lock(mainGame->gMutex);
-		pc->is_highlighting = true;
+		pc->is_highlighting = false;
 		mainGame->stACMessage->setText(epro::format(gDataManager->GetSysString(1617), gDataManager->GetName(pc->code), gDataManager->GetCounterName(type), count).data());
 		mainGame->PopupElement(mainGame->wACMessage, 20);
 		mainGame->WaitFrameSignal(40, lock);
@@ -3738,7 +3738,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 			pc->counters.erase(type);
 		if(mainGame->dInfo.isCatchingUp)
 			return true;
-		pc->is_highlighting = true;
+		pc->is_highlighting = false;
 		mainGame->stACMessage->setText(epro::format(gDataManager->GetSysString(1618), gDataManager->GetName(pc->code), gDataManager->GetCounterName(type), count).data());
 		mainGame->PopupElement(mainGame->wACMessage, 20);
 		mainGame->WaitFrameSignal(40, lock);
@@ -3978,7 +3978,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 				if(mainGame->dInfo.isCatchingUp)
 					return true;
 				if(pcard->location & LOCATION_ONFIELD)
-					pcard->is_highlighting = true;
+					pcard->is_highlighting = false;
 				std::unique_lock<epro::mutex> lock(mainGame->gMutex);
 				mainGame->showcardcode = pcard->code;
 				mainGame->showcarddif = 0;

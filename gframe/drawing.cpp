@@ -521,6 +521,21 @@ void Game::DrawMisc() {
 		it.setTranslation(chain.chain_pos);
 		matManager.mTRTexture.setTexture(0, imageManager.tNumber);
 		setCoords(i);
+		// Draw outline for chain number with float offsets
+		irr::video::SColor origColor = matManager.mTRTexture.AmbientColor;
+		matManager.mTRTexture.AmbientColor = irr::video::SColor(0xFF, 0, 0, 0); // black
+		const float outline = 0.01f; // outline thickness in world units
+		for(float dx = -outline; dx <= outline; dx += outline) {
+			for(float dy = -outline; dy <= outline; dy += outline) {
+				if(dx == 0.0f && dy == 0.0f) continue;
+				irr::core::matrix4 itOutline = it;
+				itOutline.setTranslation(chain.chain_pos + irr::core::vector3df(dx, dy, 0));
+				driver->setMaterial(matManager.mTRTexture);
+				driver->setTransform(irr::video::ETS_WORLD, itOutline);
+				driver->drawVertexPrimitiveList(matManager.vChainNum, 4, matManager.iRectangle, 2);
+			}
+		}
+		matManager.mTRTexture.AmbientColor = origColor; // restore color
 		driver->setMaterial(matManager.mTRTexture);
 		driver->setTransform(irr::video::ETS_WORLD, it);
 		driver->drawVertexPrimitiveList(matManager.vChainNum, 4, matManager.iRectangle, 2);
@@ -633,16 +648,16 @@ void Game::DrawMisc() {
 			if (pcard && (pcard->type & TYPE_PENDULUM) && !pcard->equipTarget)
 				DrawPendScale(pcard);
 		}
-		if (dField.extra[p].size()) {
-			const auto str = (dField.extra_p_count[p]) ? epro::format(L"{}({})", dField.extra[p].size(), dField.extra_p_count[p]) : epro::format(L"{}", dField.extra[p].size());
-			DrawStackIndicator(str, matManager.getExtra()[p], (p == 1));
-		}
-		if (dField.deck[p].size())
-			DrawStackIndicator(gDataManager->GetNumString(dField.deck[p].size()), matManager.getDeck()[p], (p == 1));
-		if (dField.grave[p].size())
-			DrawStackIndicator(gDataManager->GetNumString(dField.grave[p].size()), matManager.getGrave()[p], (p == 1));
-		if (dField.remove[p].size())
-			DrawStackIndicator(gDataManager->GetNumString(dField.remove[p].size()), matManager.getRemove()[p], (p == 1));
+		// if (dField.extra[p].size()) {
+		// 	const auto str = (dField.extra_p_count[p]) ? epro::format(L"{}({})", dField.extra[p].size(), dField.extra_p_count[p]) : epro::format(L"{}", dField.extra[p].size());
+		// 	DrawStackIndicator(str, matManager.getExtra()[p], (p == 1));
+		// }
+		// if (dField.deck[p].size())
+		// 	DrawStackIndicator(gDataManager->GetNumString(dField.deck[p].size()), matManager.getDeck()[p], (p == 1));
+		// if (dField.grave[p].size())
+		// 	DrawStackIndicator(gDataManager->GetNumString(dField.grave[p].size()), matManager.getGrave()[p], (p == 1));
+		// if (dField.remove[p].size())
+		// 	DrawStackIndicator(gDataManager->GetNumString(dField.remove[p].size()), matManager.getRemove()[p], (p == 1));
 	}
 }
 /*
@@ -1031,6 +1046,7 @@ void Game::DrawSpec() {
 			if(dInfo.isStarted && i >= 5)
 				continue;
 			if(!showChat && i > 2)
+
 				continue;
 			int w = textFont->getDimensionustring(chatMsg[i]).Width;
 			irr::core::recti chatrect = wChat->getRelativePosition();

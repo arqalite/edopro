@@ -48,20 +48,20 @@ Materials::Materials() {
 	iRectangle[4] = 1;
 	iRectangle[5] = 3;
 
-	SetS3DVertex(vFieldDeck[0][0], 6.9f, 2.7f, 7.7f, 3.9f, 0, 1, 0, 0, 0, 0);
-	SetS3DVertex(vFieldDeck[1][0], 5.8f, 2.7f, 6.6f, 3.9f, 0, 1, 0, 0, 0, 0);
+	SetS3DVertex(vFieldDeck[0][0], 6.91f, 2.0f, 7.71f, 3.2f, 0, 1, 0, 0, 0, 0);
+	SetS3DVertex(vFieldDeck[1][0], 5.81f, 2.0f, 6.61f, 3.2f, 0, 1, 0, 0, 0, 0);
 	//grave
-	SetS3DVertex(vFieldGrave[0][0][0], 6.9f, 0.1f, 7.7f, 1.3f, 0, 1, 0, 0, 0, 0);
-	SetS3DVertex(vFieldGrave[1][0][0], 6.9f, 1.4f, 7.7f, 2.6f, 0, 1, 0, 0, 0, 0);
+	SetS3DVertex(vFieldGrave[0][0][0], 6.91f, -0.5f, 7.71f, 0.7f, 0, 1, 0, 0, 0, 0);
+	SetS3DVertex(vFieldGrave[1][0][0], 6.91f, 0.8f, 7.71f, 2.0f, 0, 1, 0, 0, 0, 0);
 	//speed duel grave
 	SetS3DVertex(vFieldGrave[0][1][0], 5.8f, 0.1f, 6.6f, 1.3f, 0, 1, 0, 0, 0, 0);
 	SetS3DVertex(vFieldGrave[1][1][0], 5.8f, 1.4f, 6.6f, 2.6f, 0, 1, 0, 0, 0, 0);
 	//extra
-	SetS3DVertex(vFieldExtra[0][0], 0.2f, 2.7f, 1.0f, 3.9f, 0, 1, 0, 0, 0, 0);
-	SetS3DVertex(vFieldExtra[1][0], 1.3f, 2.7f, 2.1f, 3.9f, 0, 1, 0, 0, 0, 0);
+	SetS3DVertex(vFieldExtra[0][0], 0.19f, 2.0f, 0.99f, 3.2f, 0, 1, 0, 0, 0, 0);
+	SetS3DVertex(vFieldExtra[1][0], 1.29f, 2.0f, 2.09f, 3.2f, 0, 1, 0, 0, 0, 0);
 	//remove
-	SetS3DVertex(vFieldRemove[0][0][0], 7.9f, 0.1f, 8.7f, 1.3f, 0, 1, 0, 0, 0, 0);
-	SetS3DVertex(vFieldRemove[1][0][0], 6.9f, 0.1f, 7.7f, 1.3f, 0, 1, 0, 0, 0, 0);
+	SetS3DVertex(vFieldRemove[0][0][0], 7.9f, -0.6f, 8.7f, 0.6f, 0, 1, 0, 0, 0, 0);
+	SetS3DVertex(vFieldRemove[1][0][0], 6.9f, -0.6f, 7.7f, 0.6f, 0, 1, 0, 0, 0, 0);
 	//speed duel remove
 	SetS3DVertex(vFieldRemove[0][1][0], 6.8f, 0.1f, 7.6f, 1.3f, 0, 1, 0, 0, 0, 0);
 	SetS3DVertex(vFieldRemove[1][1][0], 5.8f, 0.1f, 6.6f, 1.3f, 0, 1, 0, 0, 0, 0);
@@ -76,8 +76,8 @@ Materials::Materials() {
 		SetS3DVertex(vFieldSzone[1][1][0][i], 1.2f + i * 1.1f, 2.0f, 2.3f + i * 1.1f, 3.2f, 0, 1, 0, 0, 0, 0);
 	}
 	//field
-	SetS3DVertex(vFieldSzone[0][0][0][5], 0.2f, 0.1f, 1.0f, 1.3f, 0, 1, 0, 0, 0, 0);
-	SetS3DVertex(vFieldSzone[1][0][0][5], 0.2f, 1.4f, 1.0f, 2.6f, 0, 1, 0, 0, 0, 0);
+	SetS3DVertex(vFieldSzone[0][0][0][5], 0.19f, -0.5f, 0.99f, 0.7f, 0, 1, 0, 0, 0, 0);
+	SetS3DVertex(vFieldSzone[1][0][0][5], 0.19f, 0.8f, 0.99f, 2.0f, 0, 1, 0, 0, 0, 0);
 	//field speed duel
 	SetS3DVertex(vFieldSzone[0][1][0][5], 1.3f, 0.1f, 2.1f, 1.3f, 0, 1, 0, 0, 0, 0);
 	SetS3DVertex(vFieldSzone[1][1][0][5], 1.3f, 1.4f, 2.1f, 2.6f, 0, 1, 0, 0, 0, 0);
@@ -172,6 +172,9 @@ Materials::Materials() {
 	mCard.MaterialType = irr::video::EMT_ONETEXTURE_BLEND;
 	mCard.MaterialTypeParam = pack_textureBlendFunc(irr::video::EBF_SRC_ALPHA, irr::video::EBF_ONE_MINUS_SRC_ALPHA, irr::video::EMFN_MODULATE_1X, irr::video::EAS_VERTEX_COLOR);
 	ENABLE_ZWRITE(mCard);
+	mCard.setFlag(irr::video::EMF_BILINEAR_FILTER, true);
+	mCard.setFlag(irr::video::EMF_TRILINEAR_FILTER, true);
+	mCard.setFlag(irr::video::EMF_ANISOTROPIC_FILTER, true);
 	mTexture.AmbientColor = 0xffffffff;
 	mTexture.DiffuseColor = 0xff000000;
 	mTexture.ColorMaterial = irr::video::ECM_NONE;
