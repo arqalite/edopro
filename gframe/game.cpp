@@ -334,6 +334,13 @@ void Game::Initialize() {
 	btnEP = AlignElementWithParent(env->addButton(Scale(320, 0, 370, 20), wPhase, BUTTON_EP, L"\xff25\xff30"));
 	btnEP->setVisible(false);
 
+	mainGame->stPhaseText = env->addStaticText(L"", Scale(300, 200, 700, 300), true, false, 0, -1, false);
+	stPhaseText->setVisible(false); // Start hidden, only shown in duel
+	stPhaseText->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
+	stPhaseText->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+	stPhaseText->setBackgroundColor(irr::video::SColor(200, 80, 0, 0)); // semi-transparent red
+	if(guiFont) stPhaseText->setOverrideFont(guiFont);
+
 	PopulateTabSettingsWindow();
 	PopulateSettingsWindow();
 
@@ -2121,6 +2128,7 @@ bool Game::MainLoop() {
 			DrawBackGround();
 			DrawCards();
 			DrawMisc();
+			dField.UpdatePhaseText();
 			smgr->drawAll();
 			driver->setMaterial(irr::video::IdentityMaterial);
 			ClearZBuffer(driver);//Without this, "animations" are drawn behind everything

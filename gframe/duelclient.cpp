@@ -2958,6 +2958,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 	case MSG_NEW_PHASE: {
 		Play(SoundManager::SFX::PHASE);
 		const auto phase = BufferIO::Read<uint16_t>(pbuf);
+		mainGame->dInfo.curPhase = phase;
 		auto lock = LockIf();
 		mainGame->btnDP->setVisible(false);
 		mainGame->btnDP->setSubElement(false);

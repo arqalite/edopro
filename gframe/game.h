@@ -86,6 +86,7 @@ struct DuelInfo {
 	uint64_t duel_params;
 	int turn;
 	uint8_t curMsg;
+	uint16_t curPhase = 0;
 	int team1;
 	int team2;
 	int best_of;
@@ -774,6 +775,8 @@ public:
 
 	irr::gui::IGUIStaticText* fpsCounter;
 	std::vector<std::pair<irr::gui::IGUIElement*, uint32_t>> defaultStrings;
+
+	irr::gui::IGUIStaticText* stPhaseText;
 };
 
 extern Game* mainGame;

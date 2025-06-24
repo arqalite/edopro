@@ -1045,13 +1045,13 @@ bool ClientField::CheckSelectSum() {
 		}
 		std::sort(mainGame->dField.selected_cards.begin(), mainGame->dField.selected_cards.end(), ClientCard::client_card_sort);
 		for(auto& card : selected_cards) {
-			card->is_selectable = true;
+		 card->is_selectable = true;
 			selectable_cards.push_back(card);
 		}
 		std::vector<ClientCard*> tmp(selectsum_cards.begin(), selectsum_cards.end());
 		std::sort(tmp.begin(), tmp.end(), ClientCard::client_card_sort);
 		for(auto& card : tmp) {
-			card->is_selectable = true;
+		 card->is_selectable = true;
 			selectable_cards.push_back(card);
 		}
 		return ret;
@@ -1128,13 +1128,13 @@ bool ClientField::CheckSelectSum() {
 		}
 		std::sort(selected_cards.begin(), selected_cards.end(), ClientCard::client_card_sort);
 		for(auto& card : selected_cards) {
-			card->is_selectable = true;
+		 card->is_selectable = true;
 			selectable_cards.push_back(card);
 		}
 		std::vector<ClientCard*> tmp(selectsum_cards.begin(), selectsum_cards.end());
 		std::sort(tmp.begin(), tmp.end(), ClientCard::client_card_sort);
 		for(auto& card : tmp) {
-			card->is_selectable = true;
+		 card->is_selectable = true;
 			selectable_cards.push_back(card);
 		}
 		return ret;
@@ -1151,6 +1151,55 @@ void ClientField::ShowSelectRace(uint64_t race) {
 		if(checked) {
 			checkBox->setRelativePosition(mainGame->Scale<irr::s32>(10 + (selected % 3) * 120, (selected / 3) * 25, 150 + (selected % 3) * 120, 25 + (selected / 3) * 25));
 			++selected;
+		}
+	}
+}
+// Helper function to get phase name as wstring
+static std::wstring GetPhaseName(int phase) {
+	switch(phase) {
+		case PHASE_DRAW: return L"Draw Phase";
+		case PHASE_STANDBY: return L"Standby Phase";
+		case PHASE_MAIN1: return L"Main Phase 1";
+		case PHASE_BATTLE: return L"Battle Phase";
+		case PHASE_MAIN2: return L"Main Phase 2";
+		case PHASE_END: return L"End Phase";
+		default: return L"Unknown Phase";
+	}
+}
+
+// Call this from your field update/render logic or after phase changes
+void ClientField::UpdatePhaseText() {
+	// Get the center of the leftmost Extra Monster Zone (player 0)
+	const irr::video::S3DVertex* extra0 = matManager.getExtra()[0];
+	float extra0_x = (extra0[0].Pos.X + extra0[1].Pos.X + extra0[2].Pos.X + extra0[3].Pos.X) / 4.0f;
+	float extra0_y = (extra0[0].Pos.Y + extra0[1].Pos.Y + extra0[2].Pos.Y + extra0[3].Pos.Y) / 4.0f;
+
+	// Convert 3D to 2D screen coordinates
+	irr::core::vector3df pos3d(extra0_x, extra0_y, 0.0f);
+	irr::core::matrix4 trans = mainGame->camera->getProjectionMatrix();
+	trans *= mainGame->camera->getViewMatrix();
+	irr::f32 transformedPos[4] = { pos3d.X, pos3d.Y, pos3d.Z, 1.0f };
+	trans.multiplyWith1x4Matrix(transformedPos);
+	if(transformedPos[3] == 0.0f) transformedPos[3] = 1.0f;
+	irr::f32 zDiv = irr::core::reciprocal(transformedPos[3]);
+	irr::core::dimension2d<irr::u32> dim = mainGame->driver->getCurrentRenderTargetSize();
+	irr::core::vector2di screenPos(
+		dim.Width / 2 + irr::core::round32(dim.Width / 2 * (transformedPos[0] * zDiv)),
+		dim.Height / 2 - irr::core::round32(dim.Height / 2 * (transformedPos[1] * zDiv))
+	);
+
+	// Offset for better visibility
+	screenPos.X -= 60;
+	screenPos.Y -= 400; // Raise the label to be about twice as high
+
+	// Set or update the static text
+	if(mainGame->stPhaseText) {
+		if(mainGame->dInfo.isInDuel) {
+			mainGame->stPhaseText->setText(GetPhaseName(mainGame->dInfo.curPhase).c_str());
+			mainGame->stPhaseText->setRelativePosition(irr::core::recti(screenPos.X, screenPos.Y, screenPos.X + 240, screenPos.Y + 24));
+			mainGame->stPhaseText->setVisible(true);
+		} else {
+			mainGame->stPhaseText->setVisible(false);
 		}
 	}
 }
