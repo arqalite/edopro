@@ -701,6 +701,12 @@ void ClientField::RefreshAllCards() {
 }
 void ClientField::GetChainDrawCoordinates(uint8_t controler, uint8_t location, uint32_t sequence, irr::core::vector3df* t) {
 	if ((location & (~LOCATION_OVERLAY)) == LOCATION_HAND) {
+		// Place indicator on the card itself if possible
+		if (sequence < hand[controler].size() && hand[controler][sequence]) {
+			*t = hand[controler][sequence]->curPos;
+			t->X = t->X - 0.35f;
+			return;
+		}
 		t->X = 2.95f;
 		t->Y = (controler == 0) ? 3.15f : (-3.15f);
 		t->Z = 0.03f;
@@ -785,7 +791,6 @@ void ClientField::RefreshHandHitboxes() {
 			getCardScreenCoordinates(pcard);
 }
 void ClientField::GetCardDrawCoordinates(ClientCard* pcard, irr::core::vector3df* t, irr::core::vector3df* r, bool setTrans) {
-	const int three_columns = mainGame->dInfo.HasFieldFlag(DUEL_3_COLUMNS_FIELD);
 	static const irr::core::vector3df selfATK{ 0.0f, 0.0f, 0.0f };
 	static const irr::core::vector3df selfDEF{ 0.0f, 0.0f, -irr::core::HALF_PI };
 	static const irr::core::vector3df oppoATK{ 0.0f, 0.0f, irr::core::PI };
@@ -882,30 +887,17 @@ void ClientField::GetCardDrawCoordinates(ClientCard* pcard, irr::core::vector3df
 			t->Z += 0.656f - 0.5f;
 		};
 		const auto count = hand[controler].size();
-		const size_t max = (6 - gGameConfig->topdown_view - three_columns * 2);
-		const float xoff1 = (5.5f - 0.8f * count) / 2.0f + sequence * (gGameConfig->topdown_view ? 0.73f : 0.8f);
-		float val = three_columns ? 2.4f : 4.0f;
-		if(gGameConfig->topdown_view)
-			val -= 0.35f;
-		float xoff2 = (sequence * val) / (count - 1);
-		if(three_columns) xoff2 += 0.8f;
-		auto SetXCoord = [&] {
-			if(controler == 0) {
-				if(count <= max)
-					t->X = 1.55f + xoff1;
-				else
-					t->X = 1.9f + xoff2;
-			} else {
-				if(count <= max)
-					t->X = 6.25f - xoff1;
-				else
-					t->X = 5.9f - xoff2;
-				if(gGameConfig->topdown_view)
-					t->X -= 0.378f;
-			}
-			if(gGameConfig->topdown_view)
-				t->X += 0.3f;
-		};
+		// Dynamically calculate the field center using the true center of the main Monster Zones (middle zone for each player)
+		const irr::video::S3DVertex* mzone0 = matManager.vFieldMzone[0][2]; // Player 0, middle zone
+		const irr::video::S3DVertex* mzone1 = matManager.vFieldMzone[1][2]; // Player 1, middle zone
+		float mzone0_x = (mzone0[0].Pos.X + mzone0[1].Pos.X + mzone0[2].Pos.X + mzone0[3].Pos.X) / 4.0f;
+		float mzone1_x = (mzone1[0].Pos.X + mzone1[1].Pos.X + mzone1[2].Pos.X + mzone1[3].Pos.X) / 4.0f;
+		float hand_center_offset = 0.075f; // Adjust this value as needed for perfect centering
+		float hand_center = (mzone0_x + mzone1_x) / 2.0f + hand_center_offset;
+		float spacing = 0.75f;
+		float total_width = (count > 1) ? (count - 1) * spacing : 0.0f;
+		float leftmost = hand_center - total_width / 2.0f;
+		t->X = leftmost + sequence * spacing;
 		auto SetYCoord = [&] {
 			if(gGameConfig->topdown_view) {
 				static constexpr auto base_y = 2.5f;
@@ -923,7 +915,6 @@ void ClientField::GetCardDrawCoordinates(ClientCard* pcard, irr::core::vector3df
 		};
 		const float zoff1 = gGameConfig->topdown_view ? 3.0f : 0.5f;
 		const float zoff2 = (controler == 0) ? (0.001f * sequence) : (-0.001f * sequence);
-		SetXCoord();
 		SetYCoord();
 		t->Z = zoff1 + zoff2;
 		SetHoverState();

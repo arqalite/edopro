@@ -2728,46 +2728,47 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 		return true;
 	}
 	case MSG_SHUFFLE_HAND: {
-		const auto player = mainGame->LocalPlayer(BufferIO::Read<uint8_t>(pbuf));
+		//const auto player = mainGame->LocalPlayer(BufferIO::Read<uint8_t>(pbuf));
 		/*const auto count = */CompatRead<uint8_t, uint32_t>(pbuf);
 		auto lock = LockIf();
-		if(!mainGame->dInfo.isCatchingUp) {
-			mainGame->WaitFrameSignal(5, lock);
-			if(player == 1 && !mainGame->dInfo.isReplay && !mainGame->dInfo.isSingleMode) {
-				bool flip = false;
-				for(const auto& pcard : mainGame->dField.hand[player])
-					if(pcard->code) {
-						constexpr float milliseconds = 5.0f * 1000.0f / 60.0f;
-						pcard->dPos.set(0, 0, 0);
-						pcard->dRot.set(1.322f / milliseconds, irr::core::PI / milliseconds, 0);
-						pcard->is_moving = true;
-						pcard->is_hovered = false;
-						pcard->aniFrame = milliseconds;
-						flip = true;
-					}
-				if(flip)
-					mainGame->WaitFrameSignal(5, lock);
-			}
-			for(const auto& pcard : mainGame->dField.hand[player]) {
-				constexpr float milliseconds = 5.0f * 1000.0f / 60.0f;
-				pcard->dPos.set((3.9f - pcard->curPos.X) / milliseconds, 0, 0);
-				pcard->dRot.set(0, 0, 0);
-				pcard->is_moving = true;
-				pcard->is_hovered = false;
-				pcard->aniFrame = milliseconds;
-			}
-			mainGame->WaitFrameSignal(11, lock);
-		}
-		for(const auto& pcard : mainGame->dField.hand[player]) {
-			pcard->SetCode(BufferIO::Read<uint32_t>(pbuf));
-			pcard->desc_hints.clear();
-			if(!mainGame->dInfo.isCatchingUp) {
-				pcard->is_hovered = false;
-				mainGame->dField.MoveCard(pcard, 5);
-			}
-		}
-		if(!mainGame->dInfo.isCatchingUp)
-			mainGame->WaitFrameSignal(5, lock);
+		// if(!mainGame->dInfo.isCatchingUp) {
+		// 	mainGame->WaitFrameSignal(5, lock);
+		// 	if(player == 1 && !mainGame->dInfo.isReplay && !mainGame->dInfo.isSingleMode) {
+		// 		bool flip = false;
+		// 		for(const auto& pcard : mainGame->dField.hand[player])
+		// 			if(pcard->code) {
+		// 				constexpr float milliseconds = 5.0f * 1000.0f / 60.0f;
+		// 				pcard->dPos.set(0, 0, 0);
+		// 				pcard->dRot.set(1.322f / milliseconds, irr::core::PI / milliseconds, 0);
+		// 				pcard->is_moving = true;
+		// 				pcard->is_hovered = false;
+		// 				pcard->aniFrame = milliseconds;
+		// 				flip = true;
+		// 			}
+		// 		if(flip)
+		// 			mainGame->WaitFrameSignal(5, lock);
+		// 	}
+		// 	for(const auto& pcard : mainGame->dField.hand[player]) {
+		// 		constexpr float milliseconds = 5.0f * 1000.0f / 60.0f;
+		// 		pcard->dPos.set((3.9f - pcard->curPos.X) / milliseconds, 0, 0);
+		// 		pcard->dRot.set(0, 0, 0);
+		// 		pcard->is_moving = true;
+		// 		pcard->is_hovered = false;
+		// 		pcard->aniFrame = milliseconds;
+		// 	}
+		// 	mainGame->WaitFrameSignal(11, lock);
+		// }
+		// for(const auto& pcard : mainGame->dField.hand[player]) {
+		// 	pcard->SetCode(BufferIO::Read<uint32_t>(pbuf));
+		// 	pcard->desc_hints.clear();
+		// 	if(!mainGame->dInfo.isCatchingUp) {
+		// 		pcard->is_hovered = false;
+		// 		mainGame->dField.MoveCard(pcard, 5);
+		// 	}
+		// }
+		// if(!mainGame->dInfo.isCatchingUp)
+		// 	mainGame->WaitFrameSignal(5, lock);
+		mainGame->WaitFrameSignal(5, lock);
 		return true;
 	}
 	case MSG_SHUFFLE_EXTRA: {
@@ -3424,12 +3425,14 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 		if(!mainGame->dInfo.isCatchingUp) {
 			if(mainGame->dField.last_chain)
 				mainGame->WaitFrameSignal(11, lock);
-			for(int i = 0; i < 5; ++i) {
-				mainGame->dField.chains[ct - 1].solved = false;
-				mainGame->WaitFrameSignal(3, lock);
-				mainGame->dField.chains[ct - 1].solved = true;
-				mainGame->WaitFrameSignal(3, lock);
-			}
+			// for(int i = 0; i < 5; ++i) {
+			// 	mainGame->dField.chains[ct - 1].solved = false;
+			// 	mainGame->WaitFrameSignal(3, lock);
+			// 	mainGame->dField.chains[ct - 1].solved = true;
+			// 	mainGame->WaitFrameSignal(3, lock);
+			// }
+			mainGame->WaitFrameSignal(30, lock);
+			mainGame->dField.chains[ct - 1].solved = true;
 		} else {
 			mainGame->dField.chains[ct - 1].solved = true;
 		}
