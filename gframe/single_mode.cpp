@@ -61,6 +61,7 @@ void SingleMode::SetResponse(void* resp, size_t len) {
 int SingleMode::SinglePlayThread(DuelOptions&& duelOptions) {
 	Utils::SetThreadName("SinglePlay");
 	uint64_t opt = duelOptions.duelFlags;
+	opt |= DUEL_TCG_SEGOC_NONPUBLIC;
 	std::string script_name = "";
 	auto InitReplay = [&]() {
 		uint16_t buffer[20];

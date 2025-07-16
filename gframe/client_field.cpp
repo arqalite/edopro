@@ -1160,7 +1160,7 @@ static std::wstring GetPhaseName(int phase) {
 		case PHASE_DRAW: return L"Draw Phase";
 		case PHASE_STANDBY: return L"Standby Phase";
 		case PHASE_MAIN1: return L"Main Phase 1";
-		case PHASE_BATTLE: return L"Battle Phase";
+		case PHASE_BATTLE_START: return L"Battle Phase";
 		case PHASE_MAIN2: return L"Main Phase 2";
 		case PHASE_END: return L"End Phase";
 		default: return L"Unknown Phase";
@@ -1188,19 +1188,34 @@ void ClientField::UpdatePhaseText() {
 		dim.Height / 2 - irr::core::round32(dim.Height / 2 * (transformedPos[1] * zDiv))
 	);
 
-	// Offset for better visibility
-	screenPos.X -= 60;
-	screenPos.Y -= 400; // Raise the label to be about twice as high
+	screenPos.X = static_cast<irr::s32>(dim.Width * 0.43f);
+	screenPos.Y = static_cast<irr::s32>(dim.Height * 0.46f);
+	irr::s32 phase_width = static_cast<irr::s32>(dim.Width * 0.10f);
+	irr::s32 phase_height = static_cast<irr::s32>(dim.Height * 0.06f);
 
 	// Set or update the static text
 	if(mainGame->stPhaseText) {
 		if(mainGame->dInfo.isInDuel) {
 			mainGame->stPhaseText->setText(GetPhaseName(mainGame->dInfo.curPhase).c_str());
-			mainGame->stPhaseText->setRelativePosition(irr::core::recti(screenPos.X, screenPos.Y, screenPos.X + 240, screenPos.Y + 24));
+			// Keep width and height fixed, but anchor position to relative window size
+			mainGame->stPhaseText->setRelativePosition(irr::core::recti(screenPos.X, screenPos.Y, screenPos.X + phase_width, screenPos.Y + phase_height));
 			mainGame->stPhaseText->setVisible(true);
 		} else {
 			mainGame->stPhaseText->setVisible(false);
 		}
+
+		// Set stPhaseText background and border color based on turn number
+		irr::video::SColor phaseBgColor;
+		if(mainGame->dInfo.turn % 2 == 1 || mainGame->dInfo.turn == 0) {
+			// Odd turn: first player (orange)
+			phaseBgColor = irr::video::SColor(150, 255, 140, 0); // Orange
+		} else {
+			// Even turn: second player (dark blue)
+			phaseBgColor = irr::video::SColor(150, 20, 40, 100); // Dark blue
+		}
+		mainGame->stPhaseText->setBackgroundColor(phaseBgColor);
+		mainGame->stPhaseText->setDrawBorder(true);
+		mainGame->stPhaseText->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
 	}
 }
 bool ClientField::check_min(const std::set<ClientCard*>& left, std::set<ClientCard*>::const_iterator index, int min, int max) {

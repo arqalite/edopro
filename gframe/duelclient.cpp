@@ -2768,7 +2768,7 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 		// }
 		// if(!mainGame->dInfo.isCatchingUp)
 		// 	mainGame->WaitFrameSignal(5, lock);
-		mainGame->WaitFrameSignal(5, lock);
+		mainGame->WaitFrameSignal(15, lock);
 		return true;
 	}
 	case MSG_SHUFFLE_EXTRA: {
@@ -3147,6 +3147,10 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 								mainGame->dField.MoveCard(hcard, 10);
 						}
 						mainGame->WaitFrameSignal(5, lock);
+						// Add delay ONLY for graveyard to hand movement
+						if(previous.location == LOCATION_GRAVE && current.location == LOCATION_HAND) {
+							mainGame->WaitFrameSignal(30, lock);
+						}
 					}
 				}
 			} else if (!(previous.location & LOCATION_OVERLAY)) {
