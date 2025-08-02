@@ -368,7 +368,17 @@ void Game::DrawCard(ClientCard* pcard) {
 				pcard->UpdateDrawCoordinates(true);
 		}
 	}
-	matManager.mCard.AmbientColor = 0xffffffff;
+	// Check if card is negated to apply grayscale effect
+	bool isNegated = (pcard->status & (STATUS_DISABLED | STATUS_FORBIDDEN))
+		&& (pcard->location & LOCATION_ONFIELD) && (pcard->position & POS_FACEUP);
+	
+	if(isNegated) {
+		// Apply grayscale by setting AmbientColor to gray values
+		// This will desaturate the card texture making it appear grayscale
+		matManager.mCard.AmbientColor = 0xff808080; // Gray (128, 128, 128) with full alpha
+	} else {
+		matManager.mCard.AmbientColor = 0xffffffff; // Normal white for full color
+	}
 	matManager.mCard.DiffuseColor = ((int)std::round(pcard->curAlpha) << 24) | 0xffffff;
 	driver->setTransform(irr::video::ETS_WORLD, pcard->mTransform);
 	auto m22 = pcard->mTransform(2, 2);
@@ -383,6 +393,12 @@ void Game::DrawCard(ClientCard* pcard) {
 			matManager.mCard.setTexture(0, imageManager.tCover[pcard->controler]);
 		} else {
 			matManager.mCard.setTexture(0, imageManager.GetTextureCard(pcard->cover, imgType::COVER));
+		}
+		// Apply the same grayscale effect to card backs for consistency
+		if(isNegated) {
+			matManager.mCard.AmbientColor = 0xff808080; // Gray for negated cards
+		} else {
+			matManager.mCard.AmbientColor = 0xffffffff; // Normal white
 		}
 		driver->setMaterial(matManager.mCard);
 		driver->drawVertexPrimitiveList(matManager.vCardBack, 4, matManager.iRectangle, 2);
