@@ -3321,6 +3321,10 @@ int DuelClient::ClientAnalyze(const uint8_t* msg, uint32_t len) {
 	}
 	case MSG_SPSUMMONED: {
 		event_string = gDataManager->GetSysString(1606).data();
+		if(!mainGame->dInfo.isCatchingUp) {
+			std::unique_lock<epro::mutex> lock(mainGame->gMutex);
+			mainGame->WaitFrameSignal(120, lock);
+		}
 		return true;
 	}
 	case MSG_FLIPSUMMONING: {
