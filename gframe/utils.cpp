@@ -185,6 +185,20 @@ namespace ygo {
 #endif //EDOPRO_WINDOWS
 	}
 
+	epro::thread::id Utils::GetCurrThreadId() {
+		return epro::this_thread::get_id();
+	}
+
+#if !EDOPRO_ANDROID
+	static auto main_thread_id = Utils::GetCurrThreadId();
+#else
+	extern epro::thread::id main_thread_id;
+#endif
+
+	epro::thread::id Utils::GetMainThreadId() {
+		return main_thread_id;
+	}
+
 	void Utils::SetupCrashDumpLogging() {
 #if EDOPRO_WINDOWS
 		SetUnhandledExceptionFilter(crashDumpHandler);
@@ -563,12 +577,11 @@ namespace ygo {
 	}
 	epro::path_string Utils::GetAbsolutePath(epro::path_stringview path) {
 #if EDOPRO_WINDOWS
-		epro::path_char ch;
-		auto len = GetFullPathName(path.data(), 1, &ch, nullptr);
+		auto len = GetFullPathName(path.data(), 0, nullptr, nullptr);
 		epro::path_string ret;
 		ret.resize(len);
 		len = GetFullPathName(path.data(), ret.size(), ret.data(), nullptr);
-		ret.resize(len + 1);
+		ret.resize(len);
 		std::replace(ret.begin(), ret.end(), EPRO_TEXT('\\'), EPRO_TEXT('/'));
 		return ret;
 #else
@@ -610,7 +623,7 @@ namespace ygo {
 		epro::path_string exepath;
 		exepath.resize(32768);
 		auto len = GetModuleFileName(nullptr, exepath.data(), exepath.size());
-		exepath.resize(len + 1);
+		exepath.resize(len);
 		return Utils::NormalizePath(exepath, false);
 #elif EDOPRO_LINUX
 		epro::path_char buff[PATH_MAX];
